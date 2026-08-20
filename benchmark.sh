@@ -7,6 +7,10 @@ set -e
 bash make-benchmark-fixture.sh
 wd=$PWD
 
+NODE=${NODE:-$(which node)}
+echo $NODE
+echo "node $("$NODE" -v)" >&2
+
 mkdir -p "$wd/bench-working-dir/fixture"
 cd "$wd/bench-working-dir"
 cat > "$wd/bench-working-dir/package.json" <<PJ
@@ -58,13 +62,13 @@ for p in "${patterns[@]}"; do
   # fi
 
   # echo -n $'glob v7 sync             \t'
-  # t node -e '
+  # t "$NODE" -e '
   #   var glob=require(process.argv[1])
   #   console.log(glob.sync(process.argv[2]).length)
   # ' "$wd/bench-working-dir/node_modules/glob7" "$p"
 
   # echo -n $'glob v7 async            \t'
-  # t node -e '
+  # t "$NODE" -e '
   #   var glob=require(process.argv[1])
   #   glob(process.argv[2], (er, files) => {
   #     console.log(files.length)
@@ -77,22 +81,22 @@ for p in "${patterns[@]}"; do
     const fg = require('fast-glob')
     console.log(fg.sync([process.argv[2]]).length)
 CJS
-  t node "$wd/bench-working-dir/fast-glob-sync.cjs" "$p"
+  t "$NODE" "$wd/bench-working-dir/fast-glob-sync.cjs" "$p"
 
   echo -n $'globby sync              \t'
   cat > "$wd"/bench-working-dir/globby-sync.mjs <<MJS
     import { globbySync } from "globby"
     console.log(globbySync([process.argv[2]]).length)
 MJS
-  t node "$wd/bench-working-dir/globby-sync.mjs" "$p"
+  t "$NODE" "$wd/bench-working-dir/globby-sync.mjs" "$p"
 
-  if node -e "require('fs').globSync || process.exit(1)"; then
+  if "$NODE" -e "require('fs').globSync || process.exit(1)"; then
     echo -n $'fs.globSync              \t'
     cat > "$wd"/bench-working-dir/node-fs-glob-sync.js <<CJS
       const { globSync } = require('fs')
       console.log(globSync([process.argv[2]]).length)
 CJS
-    t node "$wd/bench-working-dir/node-fs-glob-sync.js" "$p"
+    t "$NODE" "$wd/bench-working-dir/node-fs-glob-sync.js" "$p"
   fi
 
 #  echo -n $'current globSync cjs    \t'
@@ -100,28 +104,28 @@ CJS
 #  const {globSync} = require("$wd/dist/cjs/index-cjs.js")
 #  console.log(globSync(process.argv[2]).length)
 #CJS
-#  t node "$wd/bench-working-dir/sync.cjs" "$p"
+#  t "$NODE" "$wd/bench-working-dir/sync.cjs" "$p"
 #
 #  echo -n $'current glob async cjs   \t'
 #  cat > "$wd/bench-working-dir/async.cjs" <<CJS
 #  const glob = require("$wd/dist/cjs/index-cjs.js")
 #  glob(process.argv[2]).then(files => console.log(files.length))
 #CJS
-#  t node "$wd/bench-working-dir/async.cjs" "$p"
+#  t "$NODE" "$wd/bench-working-dir/async.cjs" "$p"
 
 #   echo -n $'glob v8 sync             \t'
 #   cat > "$wd/bench-working-dir/glob-8-sync.cjs" <<CJS
 #     var glob=require('glob8')
 #     console.log(glob.sync(process.argv[2]).length)
 # CJS
-#   t node "$wd/bench-working-dir/glob-8-sync.cjs" "$p"
+#   t "$NODE" "$wd/bench-working-dir/glob-8-sync.cjs" "$p"
 
   echo -n $'current globSync mjs    \t'
   cat > "$wd/bench-working-dir/sync.mjs" <<MJS
   import {globSync} from '$wd/dist/esm/index.js'
   console.log(globSync(process.argv[2]).length)
 MJS
-  t node "$wd/bench-working-dir/sync.mjs" "$p"
+  t "$NODE" "$wd/bench-working-dir/sync.mjs" "$p"
 
   echo -n $'current glob syncStream  \t'
   cat > "$wd/bench-working-dir/stream-sync.mjs" <<MJS
@@ -131,7 +135,7 @@ MJS
     .on('data', () => c++)
     .on('end', () => console.log(c))
 MJS
-  t node "$wd/bench-working-dir/stream-sync.mjs" "$p"
+  t "$NODE" "$wd/bench-working-dir/stream-sync.mjs" "$p"
 
   echo '~~ async ~~'
 
@@ -140,7 +144,7 @@ MJS
     const fg = require('fast-glob')
     fg([process.argv[2]]).then(r => console.log(r.length))
 CJS
-  t node "$wd/bench-working-dir/fast-glob-async.cjs" "$p"
+  t "$NODE" "$wd/bench-working-dir/fast-glob-async.cjs" "$p"
 
   echo -n $'globby async             \t'
   cat > "$wd"/bench-working-dir/globby-async.mjs <<MJS
@@ -149,9 +153,9 @@ CJS
       console.log(files.length)
     })
 MJS
-  t node "$wd/bench-working-dir/globby-async.mjs" "$p"
+  t "$NODE" "$wd/bench-working-dir/globby-async.mjs" "$p"
 
-  if node -e "require('fs').glob || process.exit(1)"; then
+  if "$NODE" -e "require('fs').glob || process.exit(1)"; then
     echo -n $'fs.glob                  \t'
     cat > "$wd"/bench-working-dir/node-fs-glob.js <<CJS
       const { glob } = require('fs')
@@ -159,7 +163,7 @@ MJS
         console.log(er ? 0 : results.length)
       })
 CJS
-    t node "$wd/bench-working-dir/node-fs-glob.js" "$p"
+    t "$NODE" "$wd/bench-working-dir/node-fs-glob.js" "$p"
   fi
 
 #   echo -n $'glob v8 async            \t'
@@ -169,14 +173,14 @@ CJS
 #       console.log(results.length)
 #     )
 # CJS
-#   t node "$wd/bench-working-dir/glob-8-async.cjs" "$p"
+#   t "$NODE" "$wd/bench-working-dir/glob-8-async.cjs" "$p"
 
   echo -n $'current glob async mjs   \t'
   cat > "$wd/bench-working-dir/async.mjs" <<MJS
   import { glob } from '$wd/dist/esm/index.js'
   glob(process.argv[2]).then(files => console.log(files.length))
 MJS
-  t node "$wd/bench-working-dir/async.mjs" "$p"
+  t "$NODE" "$wd/bench-working-dir/async.mjs" "$p"
 
   echo -n $'current glob stream      \t'
   cat > "$wd/bench-working-dir/stream.mjs" <<MJS
@@ -186,15 +190,15 @@ MJS
     .on('data', () => c++)
     .on('end', () => console.log(c))
 MJS
-  t node "$wd/bench-working-dir/stream.mjs" "$p"
+  t "$NODE" "$wd/bench-working-dir/stream.mjs" "$p"
 
   # echo -n $'current glob sync cjs -e \t'
-  # t node -e '
+  # t "$NODE" -e '
   # console.log(require(process.argv[1]).sync(process.argv[2]).length)
   # ' "$wd/dist/cjs/index-cjs.js" "$p"
 
   # echo -n $'current glob async cjs -e\t'
-  # t node -e '
+  # t "$NODE" -e '
   # require(process.argv[1])(process.argv[2]).then((files) => console.log(files.length))
   # ' "$wd/dist/cjs/index-cjs.js" "$p"
 
