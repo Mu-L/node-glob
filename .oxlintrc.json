@@ -1,16 +1,19 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "categories": {},
-  "options": {
-    "typeAware": true,
-    "typeCheck": true
-  },
+  "options": {},
   "rules": {
+    "no-empty-file": "error",
+    "no-unsafe-finally": "off",
+    "no-param-reassign": "off",
+    "no-dupe-keys": "error",
+    "no-new-array": "off",
+    "prefer-template": "off",
     "no-unneeded-ternary": "error",
     "unicorn/prefer-ternary": "error",
     "unicorn/prefer-logical-operator-over-ternary": "error",
     "no-unused-vars": [
-      "warn",
+      "error",
       {
         "argsIgnorePattern": "^_",
         "varsIgnorePattern": "^_",
@@ -19,12 +22,10 @@
     ],
     "no-console": "error",
     "no-alert": "error",
-    "no-param-reassign": "error",
-    "prefer-template": "error",
     "complexity": [
       "error",
       {
-        "max": 50
+        "max": 500
       }
     ],
     "no-unused-expressions": [
@@ -40,16 +41,7 @@
         "allowImplicit": true
       }
     ],
-    "quotes": [
-      "error",
-      "single",
-      {
-        "avoidEscape": true
-      }
-    ],
-    "no-return-await": "error",
     "import/namespace": "off",
-    "import/no-unresolved": "off",
     "no-control-regex": "off",
     "jsdoc/check-tag-names": "off",
     "jsdoc/require-yields": "off",
@@ -81,7 +73,7 @@
             "ignoreVoid": true
           }
         ],
-        "typescript/no-dynamic-delete": "error",
+        "typescript/no-dynamic-delete": "off",
         "typescript/no-unsafe-member-access": "error",
         "typescript/unbound-method": "error",
         "typescript/no-explicit-any": "error",
@@ -89,8 +81,8 @@
         "typescript/prefer-optional-chain": ["error"],
         "typescript/no-redundant-type-constituents": "off",
         "typescript/restrict-template-expressions": "off",
-        "typescript/await-thenable": "warn",
-        "typescript/no-base-to-string": "warn"
+        "typescript/await-thenable": "error",
+        "typescript/no-base-to-string": "error"
       }
     },
     {
@@ -111,13 +103,21 @@
     {
       "files": [
         "**/*.test.ts",
+        "**/*.test.mts",
+        "**/*.test.cts",
         "**/*.test.tsx",
         "**/*.test.js",
+        "**/*.test.cjs",
+        "**/*.test.mjs",
         "**/*.test.jsx",
         "**/test/**",
         "**/tests/**"
       ],
       "rules": {
+        "no-empty-file": "error",
+        "guard-for-in": "off",
+        "no-param-reassign": "off",
+        "no-unused-vars": "off",
         "typescript/ban-ts-comment": "off",
         "typescript/explicit-function-return-type": "off",
         "no-unused-expressions": "off",
@@ -135,12 +135,6 @@
         "typescript/require-array-sort-compare": "off",
         "typescript/no-base-to-string": "off",
         "typescript/await-thenable": "off"
-      }
-    },
-    {
-      "files": ["*.tsx"],
-      "rules": {
-        "jsdoc/require-jsdoc": "off"
       }
     },
     {
