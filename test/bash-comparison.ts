@@ -36,7 +36,7 @@ const cleanResults = (m: string[]) => {
 }
 
 globs.forEach(function (pattern) {
-  var expect = bashResults[pattern]
+  let expect = bashResults[pattern]
   // anything regarding the symlink thing will fail on windows, so just skip it
   if (
     process.platform === 'win32' &&
